@@ -2,12 +2,12 @@
 Hands detector
 
 run:
-    python3 MediaPipe_detector.py
-    python3 MediaPipe_detector.py --camera 1
+    python3 hands_tracker.py
+    python3 hands_tracker.py --camera 1
 
 controls:
     q  quit
-    r  reset kalman trackers
+    r  reset Kalman trackers
 """
 
 import argparse
@@ -57,7 +57,7 @@ class KalmanPointTracker:
 
         # measurement matrix
         # the detector only measures position [x, y]
-        # velocity is hidden and estimated by the kalman filter
+        # velocity is hidden and estimated by the Kalman filter
         self.kf.measurementMatrix = np.array(
             [[1, 0, 0, 0],
              [0, 1, 0, 0]],
@@ -82,7 +82,7 @@ class KalmanPointTracker:
         return self.kf.predict()
 
     def correct(self, x, y):
-        # convert the measured point to the format expected by opencv
+        # convert the measured point to the format expected by OpenCV
         measurement = np.array(
             [[np.float32(x)], [np.float32(y)]],
             dtype=np.float32,
@@ -218,7 +218,7 @@ def draw_and_log_hands(frame, hand_result, trackers, writer, timestamp):
     For each detected hand:
     - compute its center,
     - assign left/right label,
-    - predict its position using kalman filter,
+    - predict its position using Kalman filter,
     - correct the filter with the current measurement,
     - draw the hand skeleton,
     - write measurement and prediction to csv.
@@ -369,7 +369,7 @@ def run_detector(camera_index):
 
                 timestamp = datetime.now().strftime("%H:%M:%S.%f")
 
-                # MediaPipe expects rgb image, while opencv uses bgr
+                # MediaPipe expects rgb image, while OpenCV uses bgr
                 rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
                 # array memory layout must be compatible with MediaPipe
